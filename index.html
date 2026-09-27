@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AP Universe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Comic Book Fonts */
+        .font-bangers { font-family: 'Bangers', cursive; letter-spacing: 0.05em; }
+        .font-comic { font-family: 'Comic Neue', cursive; font-weight: 700; }
+        
+        /* Comic Panel Shadows & Borders */
+        .comic-shadow { box-shadow: 6px 6px 0px 0px rgba(0,0,0,1); }
+        .comic-shadow-sm { box-shadow: 3px 3px 0px 0px rgba(0,0,0,1); }
+        
+        .comic-border { border: 4px solid black; }
+        .comic-border-sm { border: 2px solid black; }
+
+        /* Comic Book Halftone Dot Backgrounds */
+        .bg-comic-dots {
+            background-color: #67e8f9; /* bright cyan */
+            background-image: 
+                radial-gradient(#22d3ee 15%, transparent 16%), 
+                radial-gradient(#22d3ee 15%, transparent 16%);
+            background-size: 24px 24px;
+            background-position: 0 0, 12px 12px;
+        }
+
+        .bg-watch-pattern {
+            background-color: #4ade80; /* bright green */
+            background-image: 
+                radial-gradient(#22c55e 15%, transparent 15%), 
+                radial-gradient(#22c55e 15%, transparent 15%);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+
+        /* AP Concentric Circle Logo */
+        .ap-logo {
+            width: 64px;
+            height: 64px;
+            background: #ef4444; /* Red outer */
+            border: 3px solid #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 4px 4px 0 #000;
+        }
+        .ap-logo::before {
+            content: '';
+            width: 44px;
+            height: 44px;
+            background: #f97316; /* Orange inner */
+            border: 2px solid #000;
+            border-radius: 50%;
+            position: absolute;
+        }
+        .ap-logo span {
+            position: relative;
+            font-family: 'Bangers', cursive;
+            font-size: 40px;
+            color: #9333ea; /* Purple A */
+            z-index: 2;
+            line-height: 1;
+            margin-top: 4px;
+        }
+
+        /* Animations */
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+            80% { transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animate-pop-in {
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Nav Tabs */
+        .nav-tab {
+            transition: all 0.2s;
+            transform: translateY(4px);
+        }
+        .nav-tab.active {
+            transform: translateY(0);
+            background-color: #fef08a; /* Yellow */
+            z-index: 10;
+        }
+        .nav-tab:hover:not(.active) {
+            transform: translateY(0px);
+            background-color: #e2e8f0;
+        }
+
+        /* Custom Scrollbars for AP Watch */
+        .hidden-scrollbar::-webkit-scrollbar { display: none; }
+        .hidden-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .hover-scrollbar::-webkit-scrollbar { width: 10px; }
+        .hover-scrollbar::-webkit-scrollbar-track { background: #fff; border-left: 2px solid #000; }
+        .hover-scrollbar::-webkit-scrollbar-thumb { background: #FFEB3B; border: 2px solid #000; border-radius: 0px; }
+        .hover-scrollbar:hover::-webkit-scrollbar-thumb { background: #FFC107; }
+    </style>
+</head>
+<body class="min-h-screen bg-comic-dots text-black font-comic selection:bg-yellow-400 selection:text-black pb-12">
+
+    <header class="bg-red-500 comic-border-b border-b-8 border-black pt-6 px-6 sticky top-0 z-40 shadow-[0_8px_0_0_rgba(0,0,0,1)]">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-end gap-4">
+            <div class="flex items-center gap-4 mb-2 md:mb-4">
+                
+                <div class="ap-logo transform -rotate-6 hover:rotate-12 transition-transform duration-300">
+                    <span>A</span>
+                </div>
+
+                <h1 class="text-5xl md:text-6xl font-bangers text-white" style="text-shadow: 4px 4px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;">
+                    UNIVERSE
+                </h1>
+            </div>
+            
+            <nav class="flex space-x-1 md:space-x-3 overflow-x-auto max-w-full pb-0">
+                <button onclick="switchTab('home')" id="nav-home" class="nav-tab active comic-border border-b-0 rounded-t-2xl px-6 py-2 md:py-3 font-bangers text-2xl text-black bg-white">
+                    HOME
+                </button>
+                <button onclick="switchTab('series')" id="nav-series" class="nav-tab comic-border border-b-0 rounded-t-2xl px-6 py-2 md:py-3 font-bangers text-2xl text-black bg-white">
+                    SERIES
+                </button>
+                <button onclick="switchTab('characters')" id="nav-characters" class="nav-tab comic-border border-b-0 rounded-t-2xl px-6 py-2 md:py-3 font-bangers text-2xl text-black bg-white">
+                    CHARACTERS
+                </button>
+                <button onclick="switchTab('writers')" id="nav-writers" class="nav-tab comic-border border-b-0 rounded-t-2xl px-6 py-2 md:py-3 font-bangers text-2xl text-black bg-white">
+                    WRITERS
+                </button>
+                <button onclick="switchTab('watch')" id="nav-watch" class="nav-tab comic-border border-b-0 rounded-t-2xl px-6 py-2 md:py-3 font-bangers text-2xl text-black bg-white">
+                    WATCH
+                </button>
+                <button onclick="switchTab('games')" id="nav-games" class="nav-tab comic-border border-b-0 rounded-t-2xl px-6 py-2 md:py-3 font-bangers text-2xl text-black bg-white">
+                    GAMES
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content" class="max-w-5xl mx-auto p-6 mt-8">
+    </main>
+
+    <script>
+        // --- Data ---
+        const seriesData = [
+            { 
+                title: "Into the Galaxy", 
+                books: ["Into the Galaxy 1", "Into the Galaxy 2", "Into the Galaxy 3"], 
+                trailers: [
+                    { name: "First Trailer", url: "https://docs.google.com/videos/d/1AG9Q2rruE4X3MlwStgXFW8csDptTcPDPyrhx_w8TTD0/edit?scene=id.g5b6e53bb_0_21#scene=id.g5b6e53bb_0_21" }, 
+                    { name: "Final Trailer", url: "https://docs.google.com/videos/d/1UtRagu3jGKvFKQ954PyjUXH8F2lY4JZm7J2LlTAJqnw/edit?scene=id.p#scene=id.p" },
+                    { name: "The Miner Will Return", url: "https://docs.google.com/videos/d/1PdeKmH-wu6ekJP_XZhS5d6_-V4d5N_luSR1h7iF5Yh4/edit?scene=id.g5b6f8fd3_0_0#scene=id.g5b6f8fd3_0_0" }, 
+                    { name: "The Claws Will Return", url: "https://docs.google.com/videos/d/1I-bduHJUN0bD8bsW0y_k00MMu7buFAH7xV_Ft4Zoq8Y/edit?scene=id.p#scene=id.p" }
+                ], 
+                awards: ["Best AP comic of 2025"],
+                color: "bg-blue-400" 
+            },
+            { 
+                title: "Portal Stories", 
+                books: ["Portal Stories 1", "Portal Stories 2", "Portal Stories 3"], 
+                trailers: [
+                    { name: "Official Teaser", url: "https://docs.google.com/videos/d/1_FMusYXIhyXjW8VAc3oDYcL6wyvNdXMxwL1-NSI4x3I/edit?scene=id.g5b945975_0_8#scene=id.g5b945975_0_8" }
+                ], 
+                color: "bg-purple-400" 
+            },
+            { 
+                title: "Miner", 
+                books: ["Miner"], 
+                trailers: [], 
+                color: "bg-orange-400" 
+            },
+            { 
+                title: "Food Fight", 
+                books: ["Bashing Broccoli vs Sour Slurpee", "Clever Corn vs Pepsi", "Food Fight 3", "Wacky Watermelon vs Painful Popsicle", "Food Fight 5", "Food Fight 6"], 
+                trailers: [], 
+                color: "bg-green-400" 
+            },
+            { 
+                title: "Animal City", 
+                books: ["Animal City: Parade", "Animal City: The Bandit"], 
+                trailers: [], 
+                color: "bg-yellow-400" 
+            },
+            { 
+                title: "The Animals", 
+                books: ["Woof", "Meow", "Scree", "Ribbit"], 
+                trailers: [], 
+                awards: ["Scree: Best AP Cover of the Year Award"], 
+                color: "bg-red-400" 
+            },
+            {
+                title: "Robodroids",
+                books: ["Robodroids #1"],
+                trailers: [],
+                color: "bg-gray-400"
+            }
+        ];
+
+        const charactersData = [
+            { 
+                name: "The Astronauts", 
+                description: "The astronauts are on a big mission! To save their planet Florg they must collect all 5 Florg gems. They shall face several obstacles but they will never give up. Read their own series, Into the Galaxy. And don't forget to read Into the Galaxy 3! Only next week.", 
+                appearances: ["Into the Galaxy 1-3"], 
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="w-[1em] h-[1em]"><line x1="32" y1="12" x2="32" y2="4" stroke="#000" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="4" r="3" fill="#22c55e" stroke="#000" stroke-width="2"/><path d="M32 12 C16 12 10 24 10 40 C10 52 16 60 32 60 C48 60 54 52 54 40 C54 24 48 12 32 12 Z" fill="#a855f7" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 32 C6 32 6 44 10 44" fill="#9333ea" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M54 32 C58 32 58 44 54 44" fill="#9333ea" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 60 L42 60" stroke="#000" stroke-width="4" stroke-linecap="round"/><path d="M16 34 C16 22 24 18 32 18 C40 18 48 22 48 34 C48 46 42 50 32 50 C22 50 16 46 16 34 Z" fill="#000000" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 28 C 26 23 38 23 42 28" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/><circle cx="20" cy="38" r="2.5" fill="#ffffff"/><path d="M32 12 L32 18" stroke="#000" stroke-width="3" stroke-linecap="round"/></svg>', 
+                color: "bg-blue-200" 
+            },
+            { 
+                name: "The Claws", 
+                description: "The Claws are a group of mysterious warriors who want the gems for their own planet. They are led by a mysterious lord named Lord Claw. Read them hunting down the gems in Into the Galaxy.", 
+                appearances: ["Into the Galaxy 2 and 3", "The Claws Will Return"], 
+                icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -22 84 84" class="w-[1em] h-[1em]"><path d="M 16 22 L 20 -8 L 26 16 Z" fill="#ef4444" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M 48 22 L 44 -8 L 38 16 Z" fill="#ef4444" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 16 C16 16 10 26 10 42 C10 54 16 60 32 60 C48 60 54 54 54 42 C54 26 48 16 32 16 Z" fill="#1f2937" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 38 C16 26 24 22 32 22 C40 22 48 26 48 38 C48 50 42 54 32 54 C22 54 16 50 16 38 Z" fill="#9ca3af" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><line x1="19" y1="30" x2="45" y2="30" stroke="#000" stroke-width="4" stroke-linecap="round"/><line x1="17" y1="38" x2="47" y2="38" stroke="#000" stroke-width="4" stroke-linecap="round"/><line x1="21" y1="46" x2="43" y2="46" stroke="#000" stroke-width="4" stroke-linecap="round"/><path d="M10 34 C6 34 6 46 10 46" fill="#4b5563" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M54 34 C58 34 58 46 54 46" fill="#4b5563" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>', 
+                color: "bg-red-200" 
+            }
+        ];
+
+        const writersData = [
+            { name: "Akash Dasgupta", role: "Writer & Head of AP", bio: "Akash Dasgupta is a writer and head of AP. His first series was Super Akash, which he made when he was a first grader. His first collab was The Animals series with Advik Dasgupta.", avatar: "bg-blue-500", icon: "✏️" },
+            { name: "Advik Dasgupta", role: "Writer for AP", bio: "Advik Dasgupta is a writer for AP. His first comic was Meow. His first solo series was Animal City. His overall best comic was Portal Stories 2.", avatar: "bg-green-500", icon: "🎨" }
+        ];
+
+        // Watch Tab Data
+        const watchVideosData = [
+            { id: '1', title: 'The Miner Will Return-Into The Galaxy 3', link: 'https://docs.google.com/videos/d/1PdeKmH-wu6ekJP_XZhS5d6_-V4d5N_luSR1h7iF5Yh4/edit?scene=id.g5b6f8fd3_0_0#scene=id.g5b6f8fd3_0_0' },
+            { id: '2', title: 'The Claws Will Return-Into The Galaxy 3', link: 'https://docs.google.com/videos/d/1I-bduHJUN0bD8bsW0y_k00MMu7buFAH7xV_Ft4Zoq8Y/edit?scene=id.p#scene=id.p' },
+            { id: '3', title: 'Portal Stories 3-Official Teaser', link: 'https://docs.google.com/videos/d/1_FMusYXIhyXjW8VAc3oDYcL6wyvNdXMxwL1-NSI4x3I/edit?scene=id.g5b945975_0_8#scene=id.g5b945975_0_8' },
+            { id: '4', title: 'Into The Galaxy 3-First Trailer', link: 'https://docs.google.com/videos/d/1AG9Q2rruE4X3MlwStgXFW8csDptTcPDPyrhx_w8TTD0/edit?scene=id.g5b6e53bb_0_21#scene=id.g5b6e53bb_0_21' },
+            { id: '5', title: 'Into The Galaxy 3-Final Trailer', link: 'https://docs.google.com/videos/d/1UtRagu3jGKvFKQ954PyjUXH8F2lY4JZm7J2LlTAJqnw/edit?scene=id.p#scene=id.p' },
+            { id: '6', title: 'AP Intro Video', link: 'https://docs.google.com/videos/d/1ZbbdLNo5Dd5Y4RAa8qWQQcyRoDHlKYrdU-nWvZqi8sE/edit?scene=id.gf46f95c_0_4#scene=id.gf46f95c_0_4' },
+            { id: '7', title: 'Into the Galaxy 3-Credits', link: 'https://docs.google.com/videos/d/1KN4SrLZvQhAj29GWH4c7xDmCfQqvHu21MD717MSGwnQ/edit?scene=id.p#scene=id.p' },
+            { id: '8', title: 'Into The Galaxy 4-Official Teaser', link: 'https://docs.google.com/videos/d/1prtt91F2Diu5TDwQt-NtlC8tdc-3zuvBgjKmze77j18/edit?scene=id.p#scene=id.p' },
+            { id: '9', title: 'Robodroids Announcement', link: 'https://docs.google.com/videos/d/1nme3wYMPvoOYJ7K5XXCTvZ6IEVjk_XtJlqcmdvqSaHQ/edit?scene=id.p#scene=id.p' },
+            { id: '10', title: 'Robodroids-Trailer 1', link: 'https://docs.google.com/videos/d/1OM9eo2UCN1vjilUbrUBFl5TxVzAbqAKw0HTixbGW9cU/edit?scene=id.p#scene=id.p' }
+        ];
+
+        let watchSidebarOpen = true;
+
+        // --- Views ---
+        function renderHome() {
+            return `
+                <div class="flex flex-col items-center justify-center space-y-12 py-8 animate-pop-in">
+                    <div class="bg-white comic-border comic-shadow p-8 rounded-[3rem] rounded-bl-none max-w-2xl text-center relative border-8 border-black">
+                        <h2 class="text-6xl font-bangers text-black uppercase mb-4 tracking-wide" style="text-shadow: 3px 3px 0 #fbbf24;">
+                            Welcome to the <br />
+                            <span class="text-red-500">Home of AP!</span>
+                        </h2>
+                        <p class="text-2xl font-bold">
+                            Explore the galaxy, join epic food fights, and discover amazing portal stories. 
+                            Your comic adventure begins here!
+                        </p>
+                        <div class="absolute -bottom-8 left-8 w-8 h-8 bg-white border-l-8 border-b-8 border-black transform -skew-x-[30deg]"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-8 w-full max-w-md pt-8 mx-auto">
+                        <div class="bg-purple-300 p-8 rounded-2xl comic-border comic-shadow flex flex-col items-center text-center space-y-6 transform hover:-translate-y-2 hover:rotate-2 transition-transform">
+                            <div class="w-20 h-20 bg-white comic-border-sm rounded-full flex items-center justify-center text-4xl shadow-inner">
+                                🍿
+                            </div>
+                            <h3 class="text-4xl font-bangers uppercase">New Here?</h3>
+                            <a href="https://paste-your-intro-video-link-here" target="_blank" 
+                                class="w-full py-4 px-6 bg-yellow-400 hover:bg-yellow-300 comic-border comic-shadow rounded-xl font-bangers text-2xl uppercase tracking-wider active:translate-y-1 active:shadow-none transition-all block">
+                                Watch Intro Video
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSeries() {
+            let html = `
+                <div class="animate-pop-in">
+                    <div class="bg-white comic-border comic-shadow p-6 rounded-2xl mb-8 inline-block transform -rotate-1">
+                        <h2 class="text-5xl font-bangers text-blue-600 uppercase" style="text-shadow: 2px 2px 0 #000;">Comic Series Collection</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            `;
+
+            seriesData.forEach(series => {
+                html += `
+                    <div class="${series.color} rounded-2xl comic-border comic-shadow overflow-hidden flex flex-col hover:-translate-y-2 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
+                        <div class="bg-white comic-border-b p-4 text-center">
+                            <h3 class="text-3xl font-bangers uppercase tracking-wide">${series.title}</h3>
+                        </div>
+                        <div class="p-6 flex-grow flex flex-col bg-white/50 backdrop-blur-sm">
+                            <div class="space-y-4 flex-grow">
+                                <div>
+                                    <h4 class="font-bangers text-xl mb-2 bg-black text-white inline-block px-2 py-1 rounded comic-border-sm transform -rotate-2">BOOKS</h4>
+                                    <div class="space-y-2 mt-2">
+                `;
+                series.books.forEach(book => {
+                    html += `
+                        <div class="bg-white comic-border-sm comic-shadow-sm px-3 py-2 rounded-lg font-bold flex items-center justify-between">
+                            <span>${book}</span>
+                            <i class="fas fa-book text-gray-400"></i>
+                        </div>
+                    `;
+                });
+                html += `</div></div>`;
+
+                if (series.awards && series.awards.length > 0) {
+                    html += `<div class="bg-yellow-300 comic-border rounded-xl p-3 mt-4 transform rotate-1">
+                        <h4 class="font-bangers text-2xl mb-1 flex items-center gap-2 uppercase">
+                            <i class="fas fa-trophy text-yellow-600"></i> Awards!
+                        </h4>`;
+                    series.awards.forEach(award => {
+                        html += `<p class="font-bold text-lg">${award}</p>`;
+                    });
+                    html += `</div>`;
+                }
+
+                html += `</div></div></div>`;
+            });
+
+            html += `</div></div>`;
+            return html;
+        }
+
+        function renderCharacters() {
+            let html = `
+                <div class="animate-pop-in">
+                    <div class="bg-white comic-border comic-shadow p-6 rounded-2xl mb-8 inline-block transform rotate-1">
+                        <h2 class="text-5xl font-bangers text-green-600 uppercase" style="text-shadow: 2px 2px 0 #000;">Heroes & Villains</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            `;
+
+            charactersData.forEach(char => {
+                let mediaElement = char.image 
+                    ? `<div class="bg-white comic-border w-28 h-28 flex items-center justify-center rounded-full comic-shadow mb-6 transform -rotate-6 overflow-hidden">
+                           <img src="${char.image}" alt="${char.name}" style="width: 100%; height: 100%; object-fit: cover;">
+                       </div>`
+                    : `<div class="bg-white comic-border w-20 h-20 flex items-center justify-center rounded-full text-5xl comic-shadow mb-6 transform -rotate-6">
+                           ${char.icon}
+                       </div>`;
+
+                html += `
+                    <div class="${char.color} rounded-3xl p-8 comic-border comic-shadow relative overflow-hidden group hover:scale-[1.02] transition-transform">
+                        <div class="absolute -top-4 -right-4 p-8 text-9xl opacity-20 transform rotate-12 pointer-events-none">
+                            ${char.icon}
+                        </div>
+                        <div class="relative z-10">
+                            ${mediaElement}
+                            <h3 class="text-5xl font-bangers text-black uppercase mb-4 tracking-wide" style="text-shadow: 2px 2px 0 #fff;">${char.name}</h3>
+                            <div class="bg-white/80 comic-border-sm p-4 rounded-xl mb-6">
+                                <p class="text-xl font-bold leading-relaxed">
+                                    ${char.description}
+                                </p>
+                            </div>
+                            <div>
+                                <h4 class="font-bangers text-2xl mb-3 bg-black text-white inline-block px-3 py-1 rounded comic-border-sm transform rotate-2">APPEARANCES</h4>
+                                <div class="flex flex-wrap gap-3">
+                `;
+                char.appearances.forEach(app => {
+                    html += `
+                        <span class="bg-yellow-300 comic-border-sm comic-shadow-sm px-4 py-2 rounded-xl text-lg font-bold">
+                            ${app}
+                        </span>
+                    `;
+                });
+                html += `</div></div></div></div>`;
+            });
+
+            html += `</div></div>`;
+            return html;
+        }
+
+        function renderWriters() {
+            let html = `
+                <div class="animate-pop-in">
+                    <div class="bg-white comic-border comic-shadow p-6 rounded-2xl mb-8 inline-block transform -rotate-2">
+                        <h2 class="text-5xl font-bangers text-red-600 uppercase" style="text-shadow: 2px 2px 0 #000;">Meet The Creators!</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            `;
+
+            writersData.forEach(writer => {
+                html += `
+                    <div class="bg-white rounded-3xl p-8 comic-border comic-shadow flex flex-col items-center text-center hover:-translate-y-2 transition-transform relative">
+                        <div class="${writer.avatar} comic-border absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-white font-bangers text-xl uppercase tracking-widest shadow-md">
+                            ${writer.role}
+                        </div>
+                        
+                        <div class="w-32 h-32 mt-4 bg-yellow-300 comic-border rounded-full flex items-center justify-center text-6xl comic-shadow mb-6 transform hover:rotate-12 transition-transform">
+                            ${writer.icon}
+                        </div>
+                        
+                        <h3 class="text-5xl font-bangers uppercase mb-6 text-black tracking-wide">${writer.name}</h3>
+                        
+                        <div class="bg-gray-100 comic-border-sm p-6 rounded-2xl w-full relative">
+                            <div class="absolute -top-4 -left-2 text-4xl bg-white rounded-full w-8 h-8 flex items-center justify-center comic-border-sm">"</div>
+                            <p class="text-xl font-bold leading-relaxed">
+                                ${writer.bio}
+                            </p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            return html;
+        }
+
+        function renderWatch() {
+            return `
+                <div class="animate-pop-in h-[75vh] min-h-[500px] flex flex-col border-8 border-black rounded-3xl overflow-hidden shadow-[8px_8px_0_0_#000] bg-white">
+                    <!-- Top Navigation Bar for AP Watch -->
+                    <div class="h-16 sm:h-20 bg-[#FFEB3B] border-b-4 border-black flex items-center justify-between px-2 sm:px-4 z-20 shrink-0">
+                        <div class="flex items-center gap-2 sm:gap-4">
+                            <button onclick="toggleWatchSidebar()" class="p-2 hover:bg-[#FFC107] border-2 border-transparent hover:border-black rounded-lg transition-all hidden sm:block text-black font-bold">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                            </button>
+                            <div class="flex items-center gap-2 cursor-pointer text-black hover:-translate-y-0.5 transition-transform" onclick="goWatchHome()" title="Home">
+                                <!-- Custom AP Watch Logo -->
+                                <svg viewBox="0 0 100 100" class="h-10 w-10 sm:h-14 sm:w-14 transition-transform" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="50" cy="50" r="44" fill="black" />
+                                    <circle cx="46" cy="46" r="44" fill="#4ade80" stroke="black" stroke-width="5" />
+                                    <circle cx="46" cy="46" r="34" fill="#FFD700" stroke="black" stroke-width="5" />
+                                    <text x="46" y="48" font-family="Bangers, cursive" font-size="62" fill="#4ade80" text-anchor="middle" dominant-baseline="central" transform="rotate(-8, 46, 46)">A</text>
+                                </svg>
+                                <span class="text-2xl sm:text-3xl font-bangers tracking-wider hidden md:block mt-1">AP WATCH</span>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 max-w-xl flex items-center gap-2 ml-2 sm:ml-4 mr-2 sm:mr-4">
+                            <form onsubmit="handleWatchSearch(event)" class="flex w-full">
+                                <div class="flex w-full border-2 sm:border-4 border-black bg-white focus-within:ring-4 ring-blue-400 shadow-[2px_2px_0_0_#000] sm:shadow-[4px_4px_0_0_#000] rounded-xl overflow-hidden">
+                                    <input type="text" id="watch-search-input" placeholder="SEARCH TRAILERS..." class="w-full bg-transparent text-black font-comic font-bold px-2 sm:px-4 py-1 sm:py-2 focus:outline-none uppercase placeholder-gray-400 text-sm sm:text-base" />
+                                    <button type="submit" class="px-3 sm:px-6 bg-[#2196F3] border-l-2 sm:border-l-4 border-black hover:bg-blue-400 transition-colors text-white">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Watch Body Container -->
+                    <div class="flex flex-1 overflow-hidden bg-watch-pattern relative">
+                        
+                        <!-- Wide Sidebar -->
+                        <aside id="watch-sidebar" class="w-56 sm:w-64 bg-white border-r-4 border-black hidden sm:block overflow-y-auto hover-scrollbar z-10 shrink-0 shadow-[4px_0_0_0_rgba(0,0,0,0.1)] transition-all">
+                            <div class="p-4">
+                                <div onclick="goWatchHome()" class="flex items-center px-4 py-3 rounded-xl cursor-pointer transition-all border-4 bg-[#FFEB3B] border-black shadow-[4px_4px_0_0_#000] mb-3">
+                                    <svg width="24" height="24" class="mr-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                    <span class="text-xl font-bangers tracking-wider mt-1 truncate">HEADQUARTERS</span>
+                                </div>
+                            </div>
+                        </aside>
+
+                        <!-- Mini Sidebar -->
+                        <aside id="watch-mini-sidebar" class="w-20 sm:w-24 bg-white border-r-4 border-black hidden flex-col items-center py-4 z-10 overflow-y-auto hidden-scrollbar shrink-0 shadow-[4px_0_0_0_rgba(0,0,0,0.1)] transition-all">
+                            <div onclick="goWatchHome()" class="flex flex-col items-center justify-center w-full py-4 hover:bg-[#FFEB3B] cursor-pointer border-b-2 border-transparent hover:border-black mx-2 mb-2 transition-all" title="Headquarters">
+                                <svg width="28" height="28" class="mb-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                <span class="text-xs sm:text-sm truncate w-full text-center px-1 mt-1 font-bangers">HOME</span>
+                            </div>
+                        </aside>
+
+                        <!-- Main Video Area -->
+                        <main class="flex-1 overflow-y-auto hover-scrollbar relative z-0 p-4 sm:p-8">
+                            <div id="watch-video-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+                                <!-- Videos get injected here -->
+                            </div>
+                        </main>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Functions for AP Watch
+        function renderWatchVideos(videos) {
+            const videoGrid = document.getElementById('watch-video-grid');
+            if (!videoGrid) return;
+
+            if (videos.length === 0) {
+                videoGrid.innerHTML = `
+                    <div class="col-span-full flex flex-col items-center justify-center py-16 sm:py-20 bg-white border-4 border-black rounded-3xl shadow-[8px_8px_0_0_#000] max-w-2xl mx-auto mt-4 sm:mt-10 px-4 text-center">
+                        <svg width="64" height="64" class="mb-6 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        <h2 class="text-3xl sm:text-4xl font-bangers text-black uppercase tracking-wider mb-2">No results found!</h2>
+                        <p class="font-comic font-bold text-gray-500">Try searching for a different hero or title.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            videoGrid.innerHTML = videos.map(video => `
+                <div onclick="window.open('${video.link}', '_blank', 'noopener,noreferrer')" class="flex flex-col gap-3 cursor-pointer group bg-white border-4 border-black p-3 rounded-2xl shadow-[6px_6px_0_0_#000] hover:-translate-y-2 hover:shadow-[10px_10px_0_0_#000] transition-all duration-200">
+                    <div class="relative aspect-video rounded-xl overflow-hidden border-4 border-black bg-yellow-100 flex items-center justify-center group-hover:bg-yellow-200 transition-colors">
+                        <svg width="54" height="54" class="text-black fill-white opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all drop-shadow-[2px_2px_0_rgba(0,0,0,1)]" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 8 6 4-6 4Z"/></svg>
+                        <div class="absolute -top-3 -left-3 bg-red-500 text-white font-bangers text-lg px-3 py-1 border-2 border-black rounded-full shadow-[2px_2px_0_0_#000] transform -rotate-12 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                            WATCH!
+                        </div>
+                    </div>
+                    <div class="flex gap-3 mt-1 px-1">
+                        <div class="flex flex-col overflow-hidden w-full text-center">
+                            <h3 class="text-xl font-bangers leading-tight group-hover:text-red-600 transition-colors tracking-wide">
+                                ${video.title}
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleWatchSidebar() {
+            watchSidebarOpen = !watchSidebarOpen;
+            const wide = document.getElementById('watch-sidebar');
+            const mini = document.getElementById('watch-mini-sidebar');
+            if (!wide || !mini) return;
+
+            if (watchSidebarOpen) {
+                wide.classList.add('sm:block');
+                wide.classList.remove('hidden');
+                mini.classList.remove('sm:flex');
+                mini.classList.add('hidden');
+            } else {
+                wide.classList.remove('sm:block');
+                wide.classList.add('hidden');
+                mini.classList.add('sm:flex');
+                mini.classList.remove('hidden');
+            }
+        }
+
+        function handleWatchSearch(e) {
+            e.preventDefault();
+            const input = document.getElementById('watch-search-input');
+            if (!input) return;
+            const query = input.value.toLowerCase();
+            const filtered = watchVideosData.filter(v => v.title.toLowerCase().includes(query));
+            renderWatchVideos(filtered);
+        }
+
+        function goWatchHome() {
+            const input = document.getElementById('watch-search-input');
+            if(input) input.value = '';
+            renderWatchVideos(watchVideosData);
+        }
+
+        function renderGames() {
+            return `
+                <div class="animate-pop-in flex flex-col items-center gap-12">
+                    
+                    <!-- Game 1: Florg Gem Catcher -->
+                    <div class="w-full flex flex-col items-center">
+                        <div class="bg-white comic-border comic-shadow p-4 md:p-6 rounded-2xl mb-6 inline-block transform rotate-1">
+                            <h2 class="text-4xl md:text-5xl font-bangers text-blue-600 uppercase" style="text-shadow: 2px 2px 0 #000;">Florg Gem Catcher</h2>
+                        </div>
+                        
+                        <div class="bg-white comic-border comic-shadow rounded-3xl p-6 w-full max-w-2xl relative">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-3xl font-bangers">Score: <span id="game-score" class="text-purple-600">0</span></h3>
+                                <button id="start-game-btn" onclick="startGemCatcher()" class="bg-green-400 hover:bg-green-500 text-white font-bangers text-2xl px-6 py-2 rounded-xl comic-border-sm comic-shadow-sm active:translate-y-1 active:shadow-none transition-all">
+                                    START GAME
+                                </button>
+                            </div>
+                            
+                            <div class="relative w-full aspect-[4/3] md:aspect-[16/9] bg-[url('data:image/svg+xml;utf8,<svg width=\"40\" height=\"40\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"20\" cy=\"20\" r=\"1\" fill=\"white\"/></svg>')] bg-slate-900 comic-border rounded-xl overflow-hidden cursor-crosshair shadow-inner">
+                                <canvas id="game-canvas" class="block w-full h-full touch-none"></canvas>
+                                
+                                <div id="game-over-screen" class="absolute inset-0 bg-black/80 hidden flex flex-col items-center justify-center z-10">
+                                    <h3 class="text-6xl font-bangers text-red-500 mb-4" style="text-shadow: 3px 3px 0 #fff;">GAME OVER!</h3>
+                                    <p class="text-3xl text-white font-bold mb-6 font-bangers tracking-wider">Final Score: <span id="final-score">0</span></p>
+                                    <button onclick="startGemCatcher()" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bangers text-3xl px-8 py-3 rounded-xl comic-border comic-shadow active:translate-y-1 active:shadow-none transition-all">
+                                        PLAY AGAIN
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6 bg-blue-100 p-4 rounded-xl comic-border-sm">
+                                <p class="font-bold text-lg text-center">
+                                    <i class="fas fa-info-circle text-blue-500"></i> 
+                                    Catch the colored gems (Red, Purple, Yellow, Green, Blue) to save Florg! Avoid the grey meteors! 
+                                    Use Left/Right arrows or drag on the game area to move.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Game 2: Bashing Broccoli Obstacle Run -->
+                    <div class="w-full flex flex-col items-center">
+                        <div class="bg-white comic-border comic-shadow p-4 md:p-6 rounded-2xl mb-6 inline-block transform rotate-1">
+                            <h2 class="text-4xl md:text-5xl font-bangers text-green-700 uppercase" style="text-shadow: 2px 2px 0 #000;">Bashing Broccoli Run</h2>
+                        </div>
+                        
+                        <div class="bg-white comic-border comic-shadow rounded-3xl p-6 w-full max-w-2xl relative">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-3xl font-bangers">Distance: <span id="obstacle-score" class="text-green-700">0</span> / 4000</h3>
+                                <button id="start-obstacle-btn" onclick="startObstacleGame()" class="bg-blue-400 hover:bg-blue-500 text-white font-bangers text-2xl px-6 py-2 rounded-xl comic-border-sm comic-shadow-sm active:translate-y-1 active:shadow-none transition-all">
+                                    START GAME
+                                </button>
+                            </div>
+                            
+                            <div class="relative w-full aspect-[4/3] md:aspect-[21/9] bg-blue-50 comic-border rounded-xl overflow-hidden shadow-inner border-b-8 border-b-yellow-600">
+                                <canvas id="obstacle-canvas" class="block w-full h-full touch-none"></canvas>
+                                
+                                <!-- On-Screen Responsive Game Pad for Mobile Devices -->
+                                <div class="absolute bottom-4 left-4 right-4 flex justify-between pointer-events-none md:hidden z-20">
+                                    <button id="touch-duck-btn" class="pointer-events-auto bg-orange-400 hover:bg-orange-500 text-white font-bangers text-2xl px-6 py-3 rounded-full comic-border-sm comic-shadow-sm active:translate-y-1 select-none shadow-md">
+                                        DUCK
+                                    </button>
+                                    <button id="touch-jump-btn" class="pointer-events-auto bg-blue-400 hover:bg-blue-500 text-white font-bangers text-2xl px-6 py-3 rounded-full comic-border-sm comic-shadow-sm active:translate-y-1 select-none shadow-md">
+                                        JUMP
+                                    </button>
+                                </div>
+
+                                <div id="obstacle-game-over-screen" class="absolute inset-0 bg-black/80 hidden flex flex-col items-center justify-center z-10 text-center px-4">
+                                    <h3 id="obstacle-result-title" class="text-5xl md:text-6xl font-bangers text-red-500 mb-4" style="text-shadow: 3px 3px 0 #fff;">GAME OVER!</h3>
+                                    <p class="text-2xl md:text-3xl text-white font-bold mb-6 font-bangers tracking-wider" id="obstacle-result-desc">You hit an obstacle!</p>
+                                    <button onclick="startObstacleGame()" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bangers text-3xl px-8 py-3 rounded-xl comic-border comic-shadow active:translate-y-1 active:shadow-none transition-all">
+                                        PLAY AGAIN
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6 bg-green-100 p-4 rounded-xl comic-border-sm">
+                                <p class="font-bold text-lg text-center">
+                                    <i class="fas fa-running text-green-700"></i> 
+                                    Play as Bashing Broccoli! Tap, click, or press Space/Up to jump, and press <b>Down Arrow</b> (or use the on-screen buttons) to <b>Duck</b> under flying donuts! Survive to catch Sour Slurpee!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Game 3: Food Fight Level 2 - Wacky Watermelon -->
+                    <div class="w-full flex flex-col items-center">
+                        <div class="bg-white comic-border comic-shadow p-4 md:p-6 rounded-2xl mb-6 inline-block transform -rotate-1">
+                            <h2 class="text-4xl md:text-5xl font-bangers text-rose-500 uppercase" style="text-shadow: 2px 2px 0 #000;">Food Fight 2: Watermelon</h2>
+                        </div>
+                        
+                        <div class="bg-white comic-border comic-shadow rounded-3xl p-6 w-full max-w-2xl relative">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-3xl font-bangers">Score: <span id="watermelon-score" class="text-rose-500">0</span></h3>
+                                <button id="start-watermelon-btn" onclick="startWatermelonGame()" class="bg-rose-400 hover:bg-rose-500 text-white font-bangers text-2xl px-6 py-2 rounded-xl comic-border-sm comic-shadow-sm active:translate-y-1 active:shadow-none transition-all">
+                                    START GAME
+                                </button>
+                            </div>
+                            
+                            <div class="relative w-full aspect-[4/3] md:aspect-[16/9] bg-rose-50 comic-border rounded-xl overflow-hidden cursor-crosshair shadow-inner">
+                                <canvas id="watermelon-canvas" class="block w-full h-full touch-none"></canvas>
+                                
+                                <div id="watermelon-game-over-screen" class="absolute inset-0 bg-black/80 hidden flex flex-col items-center justify-center z-10">
+                                    <h3 class="text-6xl font-bangers text-red-500 mb-4" style="text-shadow: 3px 3px 0 #fff;">BRAIN FREEZE!</h3>
+                                    <p class="text-3xl text-white font-bold mb-6 font-bangers tracking-wider">Final Score: <span id="watermelon-final-score">0</span></p>
+                                    <button onclick="startWatermelonGame()" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bangers text-3xl px-8 py-3 rounded-xl comic-border comic-shadow active:translate-y-1 active:shadow-none transition-all">
+                                        PLAY AGAIN
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6 bg-rose-100 p-4 rounded-xl comic-border-sm">
+                                <p class="font-bold text-lg text-center">
+                                    <i class="fas fa-seedling text-rose-600"></i> 
+                                    Play as Wacky Watermelon! Dodge the Painful Popsicles and automatically spit seed blasters at them! 
+                                    Use Left/Right arrows or drag to move.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Game 4: Portal Stories - Sparks Run -->
+                    <div class="w-full flex flex-col items-center">
+                        <div class="bg-fuchsia-100 comic-border border-purple-600 comic-shadow p-4 md:p-6 rounded-2xl mb-6 inline-block transform rotate-1">
+                            <h2 class="text-4xl md:text-5xl font-bangers text-purple-700 uppercase" style="text-shadow: 2px 2px 0 #fff;">Portal Stories: Sparks Run</h2>
+                        </div>
+                        
+                        <div class="bg-white comic-border comic-shadow rounded-3xl p-6 w-full max-w-2xl relative border-purple-500">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-3xl font-bangers">Distance: <span id="sparks-score" class="text-purple-700">0</span> / 3000</h3>
+                                <button id="start-sparks-btn" onclick="startSparksGame()" class="bg-purple-500 hover:bg-purple-600 text-white font-bangers text-2xl px-6 py-2 rounded-xl comic-border-sm comic-shadow-sm active:translate-y-1 active:shadow-none transition-all">
+                                    START GAME
+                                </button>
+                            </div>
+                            
+                            <div class="relative w-full aspect-[4/3] md:aspect-[21/9] bg-indigo-900 comic-border border-fuchsia-400 rounded-xl overflow-hidden shadow-inner border-b-8 border-b-purple-800">
+                                <!-- Twinkling/Starry Background CSS Effect -->
+                                <div class="absolute inset-0 bg-[url('data:image/svg+xml;utf8,<svg width=\"60\" height=\"60\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"10\" cy=\"10\" r=\"1\" fill=\"white\" opacity=\"0.5\"/><circle cx=\"40\" cy=\"30\" r=\"1.5\" fill=\"white\" opacity=\"0.8\"/><circle cx=\"25\" cy=\"50\" r=\"1\" fill=\"white\" opacity=\"0.4\"/></svg>')] opacity-50"></div>
+                                <canvas id="sparks-canvas" class="block w-full h-full touch-none relative z-10"></canvas>
+                                
+                                <!-- On-Screen Responsive Game Pad for Mobile Devices -->
+                                <div class="absolute bottom-4 left-4 right-4 flex justify-between pointer-events-none md:hidden z-20">
+                                    <button id="touch-sparks-jump-btn" class="pointer-events-auto bg-fuchsia-500 hover:bg-fuchsia-600 text-white font-bangers text-2xl px-6 py-3 rounded-full comic-border-sm comic-shadow-sm active:translate-y-1 select-none shadow-md">
+                                        JUMP
+                                    </button>
+                                    <button id="touch-sparks-shoot-btn" class="pointer-events-auto bg-orange-500 hover:bg-orange-600 text-white font-bangers text-2xl px-6 py-3 rounded-full comic-border-sm comic-shadow-sm active:translate-y-1 select-none shadow-md">
+                                        SHOOT
+                                    </button>
+                                </div>
+
+                                <div id="sparks-game-over-screen" class="absolute inset-0 bg-black/80 hidden flex flex-col items-center justify-center z-30 text-center px-4">
+                                    <h3 id="sparks-result-title" class="text-5xl md:text-6xl font-bangers text-red-500 mb-4" style="text-shadow: 3px 3px 0 #fff;">CAUGHT!</h3>
+                                    <p class="text-2xl md:text-3xl text-white font-bold mb-6 font-bangers tracking-wider" id="sparks-result-desc">The axe-spiders got you!</p>
+                                    <button onclick="startSparksGame()" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bangers text-3xl px-8 py-3 rounded-xl comic-border comic-shadow active:translate-y-1 active:shadow-none transition-all">
+                                        PLAY AGAIN
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6 bg-purple-100 p-4 rounded-xl comic-border-sm border-purple-300">
+                                <p class="font-bold text-lg text-center">
+                                    <i class="fas fa-meteor text-orange-500"></i> 
+                                    Play as Sparks! Press <b>Up Arrow</b> (or tap JUMP) to leap, and <b>Spacebar</b> (or tap SHOOT) to blast fireballs at the evil axe-spiders! 
+                                    Watch out for fast rolling boulders—you can't shoot them, so you must jump! Survive to reach the end of the portal!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            `;
+        }
+
+        // --- Game Engine: Florg Gem Catcher ---
+        let gameAnimationId;
+        let gameState = {
+            isRunning: false,
+            score: 0,
+            player: { x: 50, y: 90, speed: 6 }, 
+            items: [], 
+            keys: { left: false, right: false },
+            isDragging: false
+        };
+
+        const gemColors = ['#ef4444', '#a855f7', '#eab308', '#22c55e', '#3b82f6']; // Red, Purple, Yellow, Green, Blue
+
+        function startGemCatcher() {
+            const canvas = document.getElementById('game-canvas');
+            if (!canvas) return;
+            
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            
+            gameState = {
+                isRunning: true,
+                score: 0,
+                player: { x: canvas.width / 2, y: canvas.height - 40, speed: canvas.width > 600 ? 8 : 5 },
+                items: [],
+                keys: { left: false, right: false },
+                isDragging: false
+            };
+            
+            document.getElementById('game-score').innerText = '0';
+            document.getElementById('game-over-screen').classList.add('hidden');
+            document.getElementById('start-game-btn').innerText = 'RESTART';
+            
+            setupGameInputs(canvas);
+            cancelAnimationFrame(gameAnimationId);
+            gameAnimationId = requestAnimationFrame(gameTick);
+        }
+
+        function setupGameInputs(canvas) {
+            if (!canvas.dataset.inputsSetup) {
+                canvas.dataset.inputsSetup = 'true';
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowLeft') gameState.keys.left = true;
+                    if (e.key === 'ArrowRight') gameState.keys.right = true;
+                });
+                document.addEventListener('keyup', (e) => {
+                    if (e.key === 'ArrowLeft') gameState.keys.left = false;
+                    if (e.key === 'ArrowRight') gameState.keys.right = false;
+                });
+            }
+
+            const movePlayerToTouch = (e) => {
+                e.preventDefault();
+                if (!gameState.isRunning) return;
+                const rect = canvas.getBoundingClientRect();
+                let clientX = e.touches ? e.touches.clientX : e.clientX;
+                gameState.player.x = clientX - rect.left;
+            };
+            
+            canvas.ontouchstart = movePlayerToTouch;
+            canvas.ontouchmove = movePlayerToTouch;
+            canvas.onmousedown = (e) => { gameState.isDragging = true; movePlayerToTouch(e); };
+            canvas.onmousemove = (e) => { if (gameState.isDragging) movePlayerToTouch(e); };
+            window.addEventListener('mouseup', () => gameState.isDragging = false);
+        }
+
+        function gameTick() {
+            if (!gameState.isRunning) return;
+            
+            const canvas = document.getElementById('game-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            if (canvas.width !== canvas.clientWidth) canvas.width = canvas.clientWidth;
+            if (canvas.height !== canvas.clientHeight) {
+                canvas.height = canvas.clientHeight;
+                gameState.player.y = canvas.height - 40; 
+            }
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (Math.random() < 0.04) { 
+                const isMeteor = Math.random() < 0.25; 
+                gameState.items.push({
+                    x: Math.random() * (canvas.width - 40) + 20,
+                    y: -30,
+                    radius: 16,
+                    type: isMeteor ? 'meteor' : 'gem',
+                    color: isMeteor ? '#6b7280' : gemColors[Math.floor(Math.random() * gemColors.length)],
+                    speed: 3 + Math.random() * 4 + (gameState.score / 100) 
+                });
+            }
+            
+            if (gameState.keys.left) gameState.player.x -= gameState.player.speed;
+            if (gameState.keys.right) gameState.player.x += gameState.player.speed;
+            
+            if (gameState.player.x < 25) gameState.player.x = 25;
+            if (gameState.player.x > canvas.width - 25) gameState.player.x = canvas.width - 25;
+
+            ctx.fillStyle = '#a855f7'; 
+            ctx.beginPath();
+            ctx.arc(gameState.player.x, gameState.player.y, 25, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#000';
+            ctx.stroke();
+            
+            ctx.fillStyle = '#22d3ee'; 
+            ctx.fillRect(gameState.player.x - 12, gameState.player.y - 12, 24, 14);
+            ctx.strokeRect(gameState.player.x - 12, gameState.player.y - 12, 24, 14);
+            
+            for (let i = gameState.items.length - 1; i >= 0; i--) {
+                let item = gameState.items[i];
+                item.y += item.speed;
+                
+                ctx.fillStyle = item.color;
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#000';
+                
+                if (item.type === 'gem') {
+                    ctx.beginPath();
+                    ctx.moveTo(item.x, item.y - item.radius);
+                    ctx.lineTo(item.x + item.radius, item.y);
+                    ctx.lineTo(item.x, item.y + item.radius);
+                    ctx.lineTo(item.x - item.radius, item.y);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                } else {
+                    ctx.beginPath();
+                    ctx.arc(item.x, item.y, item.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.fillStyle = '#4b5563';
+                    ctx.beginPath();
+                    ctx.arc(item.x - 4, item.y - 4, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                const dx = gameState.player.x - item.x;
+                const dy = gameState.player.y - item.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 25 + item.radius) { 
+                    if (item.type === 'gem') {
+                        gameState.score += 10;
+                        document.getElementById('game-score').innerText = gameState.score;
+                        gameState.items.splice(i, 1);
+                    } else {
+                        gameState.isRunning = false;
+                        document.getElementById('final-score').innerText = gameState.score;
+                        document.getElementById('game-over-screen').classList.remove('hidden');
+                        return; 
+                    }
+                } else if (item.y > canvas.height + 30) {
+                    gameState.items.splice(i, 1); 
+                }
+            }
+            
+            gameAnimationId = requestAnimationFrame(gameTick);
+        }
+
+        // --- Game Engine: Bashing Broccoli Obstacle Run ---
+        let obstacleAnimationId;
+        let obstacleState = {
+            isRunning: false,
+            distance: 0,
+            frameCount: 0,
+            bossSpawned: false,
+            player: { x: 80, y: 0, vy: 0, isJumping: false, isDucking: false, radius: 25 }, 
+            obstacles: [], 
+            boss: null,
+            keys: { jump: false, down: false }
+        };
+
+        function startObstacleGame() {
+            const canvas = document.getElementById('obstacle-canvas');
+            if (!canvas) return;
+            
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            
+            obstacleState = {
+                isRunning: true,
+                distance: 0,
+                frameCount: 0,
+                bossSpawned: false,
+                player: { x: 80, y: canvas.height - 40, vy: 0, isJumping: false, isDucking: false, radius: 25 },
+                obstacles: [],
+                boss: null,
+                keys: { jump: false, down: false }
+            };
+            
+            document.getElementById('obstacle-score').innerText = '0';
+            document.getElementById('obstacle-game-over-screen').classList.add('hidden');
+            document.getElementById('start-obstacle-btn').innerText = 'RESTART';
+            
+            setupObstacleInputs(canvas);
+            cancelAnimationFrame(obstacleAnimationId);
+            obstacleAnimationId = requestAnimationFrame(obstacleTick);
+        }
+
+        function setupObstacleInputs(canvas) {
+            if (!canvas.dataset.obsInputsSetup) {
+                canvas.dataset.obsInputsSetup = 'true';
+                document.addEventListener('keydown', (e) => {
+                    if ((e.code === 'Space' || e.key === 'ArrowUp') && obstacleState.isRunning && !obstacleState.player.isJumping && !obstacleState.player.isDucking) {
+                        e.preventDefault();
+                        obstacleState.player.vy = -14;
+                        obstacleState.player.isJumping = true;
+                    }
+                    if (e.key === 'ArrowDown' && obstacleState.isRunning) {
+                        e.preventDefault();
+                        obstacleState.keys.down = true;
+                    }
+                });
+                document.addEventListener('keyup', (e) => {
+                    if (e.key === 'ArrowDown') {
+                        obstacleState.keys.down = false;
+                    }
+                });
+            }
+
+            const duckBtn = document.getElementById('touch-duck-btn');
+            const jumpBtn = document.getElementById('touch-jump-btn');
+
+            if (duckBtn && jumpBtn) {
+                duckBtn.ontouchstart = (e) => { e.preventDefault(); obstacleState.keys.down = true; };
+                duckBtn.ontouchend = (e) => { e.preventDefault(); obstacleState.keys.down = false; };
+                duckBtn.onmousedown = (e) => { e.preventDefault(); obstacleState.keys.down = true; };
+                duckBtn.onmouseup = (e) => { e.preventDefault(); obstacleState.keys.down = false; };
+
+                const triggerTouchJump = (e) => {
+                    e.preventDefault();
+                    if (obstacleState.isRunning && !obstacleState.player.isJumping && !obstacleState.player.isDucking) {
+                        obstacleState.player.vy = -14;
+                        obstacleState.player.isJumping = true;
+                    }
+                };
+                jumpBtn.ontouchstart = triggerTouchJump;
+                jumpBtn.onmousedown = triggerTouchJump;
+            }
+        }
+
+        function obstacleTick() {
+            if (!obstacleState.isRunning) return;
+            
+            const canvas = document.getElementById('obstacle-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            if (canvas.width !== canvas.clientWidth) canvas.width = canvas.clientWidth;
+            if (canvas.height !== canvas.clientHeight && !obstacleState.player.isJumping) {
+                canvas.height = canvas.clientHeight;
+                obstacleState.player.y = canvas.height - 40; 
+            }
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            obstacleState.frameCount++;
+            
+            const groundY = canvas.height - 40;
+            let speed = 5.5 + (obstacleState.distance / 800);
+            if (speed > 8.5) speed = 8.5;
+            if (obstacleState.bossSpawned) speed = 4.8;
+
+            if (obstacleState.keys.down && !obstacleState.player.isJumping) {
+                obstacleState.player.isDucking = true;
+            } else {
+                obstacleState.player.isDucking = false;
+            }
+
+            obstacleState.player.y += obstacleState.player.vy;
+            obstacleState.player.vy += 0.7; 
+            
+            if (obstacleState.player.y >= groundY) {
+                obstacleState.player.y = groundY;
+                obstacleState.player.vy = 0;
+                obstacleState.player.isJumping = false;
+            }
+
+            let px = obstacleState.player.x;
+            let py = obstacleState.player.y;
+            
+            if (obstacleState.player.isDucking) {
+                ctx.fillStyle = '#86efac'; 
+                ctx.beginPath();
+                ctx.moveTo(px - 10, py + 10);
+                let duckFlap = Math.sin(obstacleState.frameCount * 0.2) * 2;
+                ctx.lineTo(px - 35, py + 15 + duckFlap); 
+                ctx.lineTo(px - 25, py + 25);
+                ctx.lineTo(px - 10, py + 20);
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#000000';
+                ctx.stroke();
+
+                ctx.save();
+                let duckCapeX = px - 20;
+                let duckCapeY = py + 17 + (duckFlap / 2);
+                ctx.translate(duckCapeX, duckCapeY);
+                ctx.rotate((duckFlap / 2) * 0.15);
+                ctx.fillStyle = '#16a34a';
+                ctx.font = 'bold 11px "Bangers"';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 2;
+                ctx.strokeText('B', 0, 0);
+                ctx.fillText('B', 0, 0);
+                ctx.restore();
+
+                ctx.fillStyle = '#4ade80';
+                ctx.fillRect(px - 10, py + 5, 20, 15);
+                ctx.strokeRect(px - 10, py + 5, 20, 15);
+
+                ctx.fillStyle = '#16a34a';
+                ctx.beginPath(); ctx.arc(px - 10, py - 5, 12, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(px + 10, py - 5, 12, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(px, py - 14, 15, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath(); ctx.arc(px + 2, py - 8, 5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(px + 12, py - 8, 5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = '#000000';
+                ctx.beginPath(); ctx.arc(px + 4, py - 8, 2, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(px + 14, py - 8, 2, 0, Math.PI*2); ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(px + 7, py - 3, 3, 0, Math.PI, false);
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+            } else {
+                ctx.fillStyle = '#86efac'; 
+                ctx.beginPath();
+                ctx.moveTo(px - 10, py - 10);
+                let standingFlap = Math.sin(obstacleState.frameCount * 0.2) * 5;
+                ctx.lineTo(px - 40, py + 10 + standingFlap); 
+                ctx.lineTo(px - 30, py + 30);
+                ctx.lineTo(px - 10, py + 10);
+                ctx.fill();
+                ctx.lineWidth = 2.5;
+                ctx.strokeStyle = '#000000';
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(px - 23, py + 10 + (standingFlap / 2));
+                ctx.rotate((standingFlap / 5) * 0.2);
+                ctx.fillStyle = '#16a34a'; 
+                ctx.font = 'bold 16px "Bangers"';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 2.5;
+                ctx.strokeText('B', 0, 0);
+                ctx.fillText('B', 0, 0);
+                ctx.restore();
+
+                ctx.fillStyle = '#4ade80'; 
+                ctx.fillRect(px - 10, py - 10, 20, 30);
+                ctx.strokeRect(px - 10, py - 10, 20, 30);
+
+                ctx.fillStyle = '#16a34a'; 
+                ctx.beginPath(); ctx.arc(px - 12, py - 20, 16, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(px + 12, py - 20, 16, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(px, py - 35, 20, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath(); ctx.arc(px + 4, py - 25, 6, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(px + 16, py - 25, 6, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = '#000000';
+                ctx.beginPath(); ctx.arc(px + 6, py - 25, 2.5, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(px + 18, py - 25, 2.5, 0, Math.PI*2); ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(px + 10, py - 17, 5, 0, Math.PI, false);
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 3.5;
+                ctx.stroke();
+            }
+
+            if (obstacleState.distance > 4000 && !obstacleState.bossSpawned) {
+                obstacleState.bossSpawned = true;
+                obstacleState.boss = { x: canvas.width + 50, y: groundY - 10, radius: 30 };
+            }
+
+            const spawnInterval = Math.max(35, 100 - Math.floor(speed * 4.5));
+            if (!obstacleState.bossSpawned && obstacleState.frameCount % spawnInterval === 0) {
+                const rand = Math.random();
+                let obsType = 'can';
+                let obsWidth = 24, obsHeight = 30, obsY = groundY + 10;
+
+                if (rand < 0.35) {
+                    obsType = 'can';
+                } else if (rand < 0.7) {
+                    obsType = 'pepsi'; 
+                    obsWidth = 26; obsHeight = 44; obsY = groundY + 3;
+                } else {
+                    obsType = 'flying-donut'; 
+                    obsWidth = 28; obsHeight = 28; obsY = groundY - 45; 
+                }
+
+                obstacleState.obstacles.push({ x: canvas.width + 30, y: obsY, width: obsWidth, height: obsHeight, type: obsType });
+            }
+
+            if (obstacleState.bossSpawned && obstacleState.boss) {
+                obstacleState.boss.x -= (speed * 0.7); 
+                let bx = obstacleState.boss.x;
+                let by = obstacleState.boss.y;
+
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = '#ef4444'; 
+                ctx.beginPath(); ctx.moveTo(bx, by - 20); ctx.lineTo(bx + 15, by - 55); ctx.stroke();
+                ctx.lineWidth = 2; 
+                
+                ctx.fillStyle = '#3b82f6'; 
+                ctx.beginPath(); ctx.moveTo(bx - 20, by - 20); ctx.lineTo(bx + 20, by - 20); ctx.lineTo(bx + 15, by + 30); ctx.lineTo(bx - 15, by + 30); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath(); ctx.arc(bx, by - 20, 22, Math.PI, 0); ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath(); ctx.arc(bx - 7, by, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(bx + 7, by, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#ef4444'; 
+                ctx.beginPath(); ctx.arc(bx - 6, by, 2.5, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(bx + 8, by, 2.5, 0, Math.PI * 2); ctx.fill();
+
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 3.5;
+                ctx.beginPath(); ctx.moveTo(bx - 14, by - 7); ctx.lineTo(bx - 2, by - 2); ctx.moveTo(bx + 14, by - 7); ctx.lineTo(bx + 2, by - 2); ctx.stroke();
+
+                ctx.beginPath(); ctx.moveTo(bx - 10, by + 8); ctx.quadraticCurveTo(bx, by + 16, bx + 10, by + 8); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(bx - 5, by + 10); ctx.lineTo(bx - 3, by + 13); ctx.moveTo(bx, by + 12); ctx.lineTo(bx, by + 15); ctx.moveTo(bx + 5, by + 10); ctx.lineTo(bx + 3, by + 13); ctx.stroke();
+
+                if (Math.sqrt(Math.pow(px - bx, 2) + Math.pow(py - by, 2)) < obstacleState.player.radius + obstacleState.boss.radius) {
+                    obstacleState.isRunning = false;
+                    document.getElementById('obstacle-result-title').innerText = "VICTORY!";
+                    document.getElementById('obstacle-result-title').classList.replace('text-red-500', 'text-yellow-400');
+                    document.getElementById('obstacle-result-desc').innerText = "You captured Sour Slurpee!";
+                    document.getElementById('obstacle-game-over-screen').classList.remove('hidden');
+                    return;
+                }
+            }
+
+            for (let i = obstacleState.obstacles.length - 1; i >= 0; i--) {
+                let obs = obstacleState.obstacles[i];
+                obs.x -= speed;
+                
+                ctx.lineWidth = 2.5;
+                ctx.strokeStyle = '#000000';
+
+                if (obs.type === 'can') {
+                    ctx.fillStyle = '#9ca3af';
+                    ctx.fillRect(obs.x - obs.width/2, obs.y - obs.height/2, obs.width, obs.height);
+                    ctx.strokeRect(obs.x - obs.width/2, obs.y - obs.height/2, obs.width, obs.height);
+                    ctx.fillStyle = '#000000';
+                    ctx.fillRect(obs.x - obs.width/2, obs.y - 5, obs.width, 10);
+                } else if (obs.type === 'pepsi') {
+                    ctx.fillStyle = '#3b82f6';
+                    ctx.fillRect(obs.x - obs.width/2, obs.y - obs.height/2, obs.width, obs.height);
+                    ctx.strokeRect(obs.x - obs.width/2, obs.y - obs.height/2, obs.width, obs.height);
+                    ctx.fillStyle = '#ef4444';
+                    ctx.fillRect(obs.x - obs.width/2, obs.y - 6, obs.width, 8);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(obs.x - obs.width/2, obs.y + 2, obs.width, 6);
+                } else if (obs.type === 'flying-donut') {
+                    ctx.fillStyle = '#f472b6'; 
+                    ctx.beginPath();
+                    ctx.arc(obs.x, obs.y, 14, 0, Math.PI * 2, false);
+                    ctx.arc(obs.x, obs.y, 5, 0, Math.PI * 2, true);
+                    ctx.closePath();
+                    ctx.fill(); ctx.stroke();
+
+                    ctx.fillStyle = '#facc15'; ctx.fillRect(obs.x - 8, obs.y - 4, 3, 2);
+                    ctx.fillStyle = '#3b82f6'; ctx.fillRect(obs.x + 5, obs.y - 6, 2, 3);
+                    ctx.fillStyle = '#10b981'; ctx.fillRect(obs.x - 2, obs.y + 7, 3, 2);
+                }
+                
+                let playerLeft = px - 18, playerRight = px + 18, playerTop = py - 35, playerBottom = py + 20;
+                if (obstacleState.player.isDucking) playerTop = py - 5; 
+
+                if (playerRight - 4 > obs.x - obs.width/2 && playerLeft + 4 < obs.x + obs.width/2 && playerBottom - 2 > obs.y - obs.height/2 && playerTop + 2 < obs.y + obs.height/2) {
+                    obstacleState.isRunning = false;
+                    document.getElementById('obstacle-result-title').innerText = "GAME OVER!";
+                    document.getElementById('obstacle-result-title').classList.replace('text-yellow-400', 'text-red-500');
+                    document.getElementById('obstacle-result-desc').innerText = "You tripped on some junk food!";
+                    document.getElementById('obstacle-game-over-screen').classList.remove('hidden');
+                    return;
+                }
+                if (obs.x < -40) obstacleState.obstacles.splice(i, 1);
+            }
+            
+            if (!obstacleState.bossSpawned) {
+                obstacleState.distance += Math.floor(speed);
+                document.getElementById('obstacle-score').innerText = obstacleState.distance;
+            }
+
+            obstacleAnimationId = requestAnimationFrame(obstacleTick);
+        }
+
+        // --- Game Engine: Food Fight Level 2 (Wacky Watermelon) ---
+        let watermelonAnimationId;
+        let watermelonState = {
+            isRunning: false,
+            score: 0,
+            frameCount: 0,
+            player: { x: 50, y: 90, speed: 7 }, 
+            enemies: [], 
+            bullets: [],
+            keys: { left: false, right: false },
+            isDragging: false
+        };
+
+        function startWatermelonGame() {
+            const canvas = document.getElementById('watermelon-canvas');
+            if (!canvas) return;
+            
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            
+            watermelonState = {
+                isRunning: true,
+                score: 0,
+                frameCount: 0,
+                player: { x: canvas.width / 2, y: canvas.height - 40, speed: canvas.width > 600 ? 9 : 6 },
+                enemies: [],
+                bullets: [],
+                keys: { left: false, right: false },
+                isDragging: false
+            };
+            
+            document.getElementById('watermelon-score').innerText = '0';
+            document.getElementById('watermelon-game-over-screen').classList.add('hidden');
+            document.getElementById('start-watermelon-btn').innerText = 'RESTART';
+            
+            setupWatermelonInputs(canvas);
+            cancelAnimationFrame(watermelonAnimationId);
+            watermelonAnimationId = requestAnimationFrame(watermelonTick);
+        }
+
+        function setupWatermelonInputs(canvas) {
+            if (!canvas.dataset.wmInputsSetup) {
+                canvas.dataset.wmInputsSetup = 'true';
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowLeft') watermelonState.keys.left = true;
+                    if (e.key === 'ArrowRight') watermelonState.keys.right = true;
+                });
+                document.addEventListener('keyup', (e) => {
+                    if (e.key === 'ArrowLeft') watermelonState.keys.left = false;
+                    if (e.key === 'ArrowRight') watermelonState.keys.right = false;
+                });
+            }
+
+            const movePlayerToTouch = (e) => {
+                e.preventDefault();
+                if (!watermelonState.isRunning) return;
+                const rect = canvas.getBoundingClientRect();
+                let clientX = e.touches ? e.touches.clientX : e.clientX;
+                watermelonState.player.x = clientX - rect.left;
+            };
+            
+            canvas.ontouchstart = movePlayerToTouch;
+            canvas.ontouchmove = movePlayerToTouch;
+            canvas.onmousedown = (e) => { watermelonState.isDragging = true; movePlayerToTouch(e); };
+            canvas.onmousemove = (e) => { if (watermelonState.isDragging) movePlayerToTouch(e); };
+            window.addEventListener('mouseup', () => watermelonState.isDragging = false);
+        }
+
+        function watermelonTick() {
+            if (!watermelonState.isRunning) return;
+            
+            const canvas = document.getElementById('watermelon-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            if (canvas.width !== canvas.clientWidth) canvas.width = canvas.clientWidth;
+            if (canvas.height !== canvas.clientHeight) {
+                canvas.height = canvas.clientHeight;
+                watermelonState.player.y = canvas.height - 40;
+            }
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            watermelonState.frameCount++;
+            
+            if (Math.random() < 0.04 + (watermelonState.score / 3500)) { 
+                const popColors = ['#0ea5e9', '#d946ef', '#f59e0b', '#10b981'];
+                watermelonState.enemies.push({
+                    x: Math.random() * (canvas.width - 40) + 20,
+                    y: -40,
+                    radius: 18,
+                    color: popColors[Math.floor(Math.random() * popColors.length)],
+                    speed: 3 + Math.random() * 3.5 + (watermelonState.score / 200)
+                });
+            }
+
+            if (watermelonState.frameCount % 12 === 0) {
+                watermelonState.bullets.push({ x: watermelonState.player.x, y: watermelonState.player.y - 25, radius: 4, speed: 12 });
+            }
+            
+            if (watermelonState.keys.left) watermelonState.player.x -= watermelonState.player.speed;
+            if (watermelonState.keys.right) watermelonState.player.x += watermelonState.player.speed;
+            
+            if (watermelonState.player.x < 30) watermelonState.player.x = 30;
+            if (watermelonState.player.x > canvas.width - 30) watermelonState.player.x = canvas.width - 30;
+
+            let px = watermelonState.player.x;
+            let py = watermelonState.player.y;
+            
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#000';
+            
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath(); ctx.arc(px, py + 10, 26, Math.PI, 0); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+            ctx.fillStyle = '#f43f5e';
+            ctx.beginPath(); ctx.arc(px, py + 10, 20, Math.PI, 0); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath(); ctx.arc(px - 8, py - 2, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.arc(px + 8, py - 2, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = '#000000';
+            ctx.beginPath(); ctx.arc(px - 7, py - 4, 2, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(px + 9, py, 2, 0, Math.PI * 2); ctx.fill();
+
+            ctx.fillStyle = '#000000';
+            ctx.beginPath(); ctx.ellipse(px - 12, py + 6, 2, 4, 0.5, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(px, py + 4, 2, 4, 0, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(px + 12, py + 6, 2, 4, -0.5, 0, Math.PI*2); ctx.fill();
+
+            for (let i = watermelonState.bullets.length - 1; i >= 0; i--) {
+                let bullet = watermelonState.bullets[i];
+                bullet.y -= bullet.speed;
+                ctx.fillStyle = '#000000'; 
+                ctx.beginPath(); ctx.ellipse(bullet.x, bullet.y, 3, bullet.radius + 2, 0, 0, Math.PI * 2); ctx.fill();
+                if (bullet.y < -10) watermelonState.bullets.splice(i, 1);
+            }
+            
+            for (let i = watermelonState.enemies.length - 1; i >= 0; i--) {
+                let enemy = watermelonState.enemies[i];
+                enemy.y += enemy.speed;
+                let ex = enemy.x;
+                let ey = enemy.y;
+                
+                ctx.lineWidth = 2.5; ctx.strokeStyle = '#000';
+                
+                ctx.fillStyle = '#b45309';
+                ctx.fillRect(ex - 4, ey + 15, 8, 14); ctx.strokeRect(ex - 4, ey + 15, 8, 14);
+                
+                ctx.fillStyle = enemy.color;
+                ctx.beginPath(); ctx.arc(ex, ey - 5, 14, Math.PI, 0); ctx.lineTo(ex + 14, ey + 15); ctx.lineTo(ex - 14, ey + 15); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+                ctx.strokeStyle = '#000000'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(ex - 10, ey - 2); ctx.lineTo(ex - 2, ey + 2); ctx.moveTo(ex + 10, ey - 2); ctx.lineTo(ex + 2, ey + 2); ctx.stroke();
+
+                let enemyHit = false;
+                for (let j = watermelonState.bullets.length - 1; j >= 0; j--) {
+                    let b = watermelonState.bullets[j];
+                    if (Math.sqrt(Math.pow(b.x - ex, 2) + Math.pow(b.y - ey, 2)) < enemy.radius + b.radius + 4) {
+                        watermelonState.score += 25; 
+                        document.getElementById('watermelon-score').innerText = watermelonState.score;
+                        watermelonState.bullets.splice(j, 1);
+                        watermelonState.enemies.splice(i, 1);
+                        enemyHit = true;
+                        break;
+                    }
+                }
+                if (enemyHit) continue;
+                
+                if (Math.sqrt(Math.pow(watermelonState.player.x - ex, 2) + Math.pow(watermelonState.player.y - ey, 2)) < 26 + enemy.radius) { 
+                    watermelonState.isRunning = false;
+                    document.getElementById('watermelon-final-score').innerText = watermelonState.score;
+                    document.getElementById('watermelon-game-over-screen').classList.remove('hidden');
+                    return; 
+                } 
+                
+                if (enemy.y > canvas.height + 40) watermelonState.enemies.splice(i, 1);
+            }
+            
+            watermelonAnimationId = requestAnimationFrame(watermelonTick);
+        }
+
+        // --- Game Engine: Portal Stories: Sparks Run ---
+        let sparksAnimationId;
+        let sparksState = {
+            isRunning: false,
+            distance: 0,
+            frameCount: 0,
+            portalSpawned: false,
+            portal: null,
+            player: { x: 80, y: 0, vy: 0, isJumping: false, radius: 20 }, 
+            enemies: [], 
+            bullets: [],
+            keys: { jump: false, shoot: false }
+        };
+
+        function startSparksGame() {
+            const canvas = document.getElementById('sparks-canvas');
+            if (!canvas) return;
+            
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            
+            sparksState = {
+                isRunning: true,
+                distance: 0,
+                frameCount: 0,
+                portalSpawned: false,
+                portal: null,
+                player: { x: 80, y: canvas.height - 50, vy: 0, isJumping: false, radius: 20 },
+                enemies: [],
+                bullets: [],
+                keys: { jump: false, shoot: false }
+            };
+            
+            document.getElementById('sparks-score').innerText = '0';
+            document.getElementById('sparks-game-over-screen').classList.add('hidden');
+            document.getElementById('start-sparks-btn').innerText = 'RESTART';
+            
+            setupSparksInputs(canvas);
+            cancelAnimationFrame(sparksAnimationId);
+            sparksAnimationId = requestAnimationFrame(sparksTick);
+        }
+
+        function setupSparksInputs(canvas) {
+            if (!canvas.dataset.spInputsSetup) {
+                canvas.dataset.spInputsSetup = 'true';
+                document.addEventListener('keydown', (e) => {
+                    if ((e.code === 'Space') && sparksState.isRunning) {
+                        e.preventDefault();
+                        sparksState.bullets.push({ x: sparksState.player.x + 20, y: sparksState.player.y, radius: 6, speed: 10 });
+                    }
+                    if ((e.key === 'ArrowUp') && sparksState.isRunning && !sparksState.player.isJumping) {
+                        e.preventDefault();
+                        sparksState.player.vy = -14;
+                        sparksState.player.isJumping = true;
+                    }
+                });
+            }
+
+            const jumpBtn = document.getElementById('touch-sparks-jump-btn');
+            const shootBtn = document.getElementById('touch-sparks-shoot-btn');
+
+            if (jumpBtn && shootBtn) {
+                const triggerJump = (e) => {
+                    e.preventDefault();
+                    if (sparksState.isRunning && !sparksState.player.isJumping) {
+                        sparksState.player.vy = -14; sparksState.player.isJumping = true;
+                    }
+                };
+                const triggerShoot = (e) => {
+                    e.preventDefault();
+                    if (sparksState.isRunning) sparksState.bullets.push({ x: sparksState.player.x + 20, y: sparksState.player.y, radius: 6, speed: 10 });
+                };
+                jumpBtn.ontouchstart = triggerJump; jumpBtn.onmousedown = triggerJump;
+                shootBtn.ontouchstart = triggerShoot; shootBtn.onmousedown = triggerShoot;
+            }
+        }
+
+        function sparksTick() {
+            if (!sparksState.isRunning) return;
+            
+            const canvas = document.getElementById('sparks-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            if (canvas.width !== canvas.clientWidth) canvas.width = canvas.clientWidth;
+            if (canvas.height !== canvas.clientHeight && !sparksState.player.isJumping) {
+                canvas.height = canvas.clientHeight;
+                sparksState.player.y = canvas.height - 50; 
+            }
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            sparksState.frameCount++;
+            
+            const groundY = canvas.height - 50;
+            let speed = Math.min(8, 4 + (sparksState.distance / 1000));
+
+            sparksState.player.y += sparksState.player.vy;
+            sparksState.player.vy += 0.7; 
+            
+            if (sparksState.player.y >= groundY) {
+                sparksState.player.y = groundY;
+                sparksState.player.vy = 0;
+                sparksState.player.isJumping = false;
+            }
+
+            let px = sparksState.player.x;
+            let py = sparksState.player.y;
+
+            for (let i = sparksState.bullets.length - 1; i >= 0; i--) {
+                let b = sparksState.bullets[i];
+                b.x += b.speed;
+                ctx.fillStyle = '#f97316'; ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#fef08a'; ctx.beginPath(); ctx.arc(b.x - 2, b.y, b.radius - 2, 0, Math.PI*2); ctx.fill();
+                if (b.x > canvas.width + 20) sparksState.bullets.splice(i, 1);
+            }
+
+            if (sparksState.distance >= 2800 && !sparksState.portalSpawned) {
+                sparksState.portalSpawned = true;
+                sparksState.portal = { x: canvas.width + 100, y: groundY - 40, radius: 70, angle: 0 };
+            }
+
+            if (sparksState.portalSpawned && sparksState.portal) {
+                sparksState.portal.x -= (speed * 0.8);
+                sparksState.portal.angle += 0.05;
+
+                ctx.save();
+                ctx.translate(sparksState.portal.x, sparksState.portal.y);
+                ctx.rotate(sparksState.portal.angle);
+
+                let pRadius = sparksState.portal.radius + Math.sin(sparksState.frameCount * 0.1) * 5;
+                const gradient = ctx.createRadialGradient(0, 0, 5, 0, 0, pRadius);
+                gradient.addColorStop(0, '#ffffff'); gradient.addColorStop(0.2, '#c084fc'); gradient.addColorStop(0.5, '#7e22ce'); gradient.addColorStop(0.8, '#2563eb'); gradient.addColorStop(1, 'transparent');
+
+                ctx.fillStyle = gradient; ctx.beginPath(); ctx.arc(0, 0, pRadius, 0, Math.PI * 2); ctx.fill();
+                ctx.lineWidth = 4; ctx.strokeStyle = '#60a5fa'; ctx.beginPath(); ctx.arc(0, 0, pRadius * 0.6, 0, Math.PI); ctx.stroke();
+                ctx.strokeStyle = '#d8b4fe'; ctx.beginPath(); ctx.arc(0, 0, pRadius * 0.8, Math.PI, Math.PI * 2); ctx.stroke();
+                ctx.restore();
+
+                if (Math.sqrt(Math.pow(px - sparksState.portal.x, 2) + Math.pow(py - sparksState.portal.y, 2)) < sparksState.player.radius + 30) {
+                    sparksState.isRunning = false;
+                    document.getElementById('sparks-result-title').innerText = "VICTORY!";
+                    document.getElementById('sparks-result-title').classList.replace('text-red-500', 'text-yellow-400');
+                    document.getElementById('sparks-result-desc').innerText = "You reached the Portal!";
+                    document.getElementById('sparks-game-over-screen').classList.remove('hidden');
+                    return;
+                }
+            }
+
+            ctx.save();
+            ctx.translate(px, py);
+
+            let flap = Math.sin(sparksState.frameCount * 0.3) * 10;
+            ctx.lineWidth = 4; ctx.strokeStyle = '#374151'; 
+            
+            ctx.beginPath(); ctx.moveTo(-15, 0); ctx.lineTo(-45, -20 + flap); ctx.lineTo(-50, 0 + flap); ctx.lineTo(-45, 20 + flap); ctx.closePath(); ctx.fillStyle = '#fbcfe8'; ctx.fill();
+            ctx.beginPath(); ctx.moveTo(-15, 0); ctx.lineTo(-45, -20 + flap); ctx.stroke(); ctx.beginPath(); ctx.moveTo(-15, 0); ctx.lineTo(-50, 0 + flap); ctx.stroke(); ctx.beginPath(); ctx.moveTo(-15, 0); ctx.lineTo(-45, 20 + flap); ctx.stroke(); 
+
+            ctx.beginPath(); ctx.moveTo(15, 0); ctx.lineTo(45, -20 + flap); ctx.lineTo(50, 0 + flap); ctx.lineTo(45, 20 + flap); ctx.closePath(); ctx.fillStyle = '#fbcfe8'; ctx.fill();
+            ctx.beginPath(); ctx.moveTo(15, 0); ctx.lineTo(45, -20 + flap); ctx.stroke(); ctx.beginPath(); ctx.moveTo(15, 0); ctx.lineTo(50, 0 + flap); ctx.stroke(); ctx.beginPath(); ctx.moveTo(15, 0); ctx.lineTo(45, 20 + flap); ctx.stroke(); 
+
+            ctx.fillStyle = '#eaddcf'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.ellipse(-8, 16, 4, 7, 0.2, 0, Math.PI*2); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.ellipse(-8, 25, 3, 6, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke(); 
+            ctx.fillStyle = '#6b7280'; ctx.beginPath(); ctx.moveTo(-8, 29); ctx.lineTo(-14, 34); ctx.lineTo(-10, 32); ctx.lineTo(-8, 36); ctx.lineTo(-6, 32); ctx.lineTo(-2, 34); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+            ctx.fillStyle = '#eaddcf'; ctx.beginPath(); ctx.ellipse(8, 16, 4, 7, -0.2, 0, Math.PI*2); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.ellipse(8, 25, 3, 6, 0, 0, Math.PI*2); ctx.fill(); ctx.stroke(); 
+            ctx.fillStyle = '#6b7280'; ctx.beginPath(); ctx.moveTo(8, 29); ctx.lineTo(2, 34); ctx.lineTo(6, 32); ctx.lineTo(8, 36); 
+
+            ctx.fillStyle = '#f3e1d4'; ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+
+            ctx.fillStyle = '#e5e7eb'; 
+            ctx.beginPath(); ctx.moveTo(-10, -18); ctx.quadraticCurveTo(-14, -30, -5, -28); ctx.quadraticCurveTo(-6, -22, -4, -19); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(10, -18); ctx.quadraticCurveTo(14, -30, 5, -28); ctx.quadraticCurveTo(6, -22, 4, -19); ctx.fill(); ctx.stroke();
+
+            ctx.fillStyle = '#1f2937'; ctx.beginPath(); ctx.ellipse(-7, -4, 4, 7, 0, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.ellipse(7, -4, 4, 7, 0, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(-7, -8, 2.5, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(7, -8, 2.5, 0, Math.PI*2); ctx.fill();
+
+            ctx.fillStyle = '#1f2937'; ctx.beginPath(); ctx.arc(0, 7, 5, 0, Math.PI, false); ctx.fill();
+            ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.moveTo(-2, 7); ctx.lineTo(2, 7); ctx.lineTo(0, 10); ctx.fill(); 
+
+            ctx.restore();
+
+            if (!sparksState.portalSpawned) {
+                if (sparksState.frameCount % Math.max(50, 120 - Math.floor(speed * 5)) === 0) {
+                    if (Math.random() < 0.35) {
+                        sparksState.enemies.push({ type: 'boulder', x: canvas.width + 40, y: groundY - 10, radius: 28, speedMult: 1.5 + Math.random() * 0.4, angle: 0 });
+                    } else {
+                        sparksState.enemies.push({ type: 'spider', x: canvas.width + 30, y: groundY + 15, radius: 15, speedMult: 1 });
+                    }
+                }
+            }
+
+            for (let i = sparksState.enemies.length - 1; i >= 0; i--) {
+                let enemy = sparksState.enemies[i];
+                enemy.x -= speed * (enemy.speedMult || 1);
+                
+                ctx.save();
+                ctx.translate(enemy.x, enemy.y);
+                
+                if (enemy.type === 'boulder') {
+                    enemy.angle -= 0.1 * (speed * enemy.speedMult); ctx.rotate(enemy.angle);
+                    ctx.fillStyle = '#6b7280'; ctx.beginPath(); ctx.arc(0, 0, enemy.radius, 0, Math.PI*2); ctx.fill(); 
+                    ctx.lineWidth = 3; ctx.strokeStyle = '#1f2937'; ctx.stroke();
+                    ctx.fillStyle = '#4b5563'; ctx.beginPath(); ctx.arc(-12, -8, 6, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(10, 12, 8, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(8, -14, 4, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(-10, 15, 5, 0, Math.PI*2); ctx.fill();
+                } else {
+                    let wiggle = Math.sin(sparksState.frameCount * 0.5) * 5;
+                    ctx.strokeStyle = '#1f2937'; ctx.lineWidth = 3;
+                    for(let side=-1; side<=1; side+=2) {
+                        for(let leg=0; leg<4; leg++) { ctx.beginPath(); ctx.moveTo(side*5, 0); ctx.quadraticCurveTo(side*20, -10 + wiggle*(leg%2==0?1:-1), side*25, 15); ctx.stroke(); }
+                    }
+                    ctx.fillStyle = '#374151'; ctx.beginPath(); ctx.arc(0, 0, 15, 0, Math.PI*2); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.arc(-10, -5, 10, 0, Math.PI*2); ctx.fill(); ctx.stroke(); 
+                    ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.moveTo(-16, -8); ctx.lineTo(-10, -4); ctx.lineTo(-12, -2); ctx.fill(); ctx.beginPath(); ctx.moveTo(-6, -8); ctx.lineTo(-10, -4); ctx.lineTo(-8, -2); ctx.fill();
+                    ctx.translate(-15, -15); ctx.rotate(wiggle * 0.05); ctx.fillStyle = '#78350f'; ctx.fillRect(-2, -15, 4, 30); ctx.fillStyle = '#9ca3af'; ctx.beginPath(); ctx.moveTo(2, -10); ctx.lineTo(15, -15); ctx.lineTo(15, -5); ctx.fill(); ctx.stroke();
+                }
+
+                ctx.restore();
+
+                let enemyHit = false;
+                for (let j = sparksState.bullets.length - 1; j >= 0; j--) {
+                    if (Math.sqrt(Math.pow(sparksState.bullets[j].x - enemy.x, 2) + Math.pow(sparksState.bullets[j].y - enemy.y, 2)) < enemy.radius + sparksState.bullets[j].radius + (enemy.type === 'spider' ? 15 : 5)) { 
+                        sparksState.bullets.splice(j, 1); 
+                        if (enemy.type === 'spider') { sparksState.enemies.splice(i, 1); enemyHit = true; }
+                        break;
+                    }
+                }
+                if (enemyHit) continue;
+                
+                let pL = sparksState.player.x - 12, pR = sparksState.player.x + 12, pT = sparksState.player.y - 15, pB = sparksState.player.y + 25;
+                let oL = enemy.type === 'boulder' ? enemy.x - enemy.radius + 8 : enemy.x - 15;
+                let oR = enemy.type === 'boulder' ? enemy.x + enemy.radius - 8 : enemy.x + 15;
+                let oT = enemy.type === 'boulder' ? enemy.y - enemy.radius + 8 : enemy.y - 20;
+                let oB = enemy.type === 'boulder' ? enemy.y + enemy.radius - 8 : enemy.y + 15;
+
+                if (pR > oL && pL < oR && pB > oT && pT < oB) { 
+                    sparksState.isRunning = false;
+                    document.getElementById('sparks-result-title').innerText = "GAME OVER!";
+                    document.getElementById('sparks-result-title').classList.replace('text-yellow-400', 'text-red-500');
+                    document.getElementById('sparks-result-desc').innerText = enemy.type === 'boulder' ? "You got flattened by a boulder!" : "The axe-spiders got you!";
+                    document.getElementById('sparks-game-over-screen').classList.remove('hidden');
+                    return; 
+                } 
+                if (enemy.x < -60) sparksState.enemies.splice(i, 1);
+            }
+            
+            if (!sparksState.portalSpawned) {
+                sparksState.distance += Math.floor(speed);
+                document.getElementById('sparks-score').innerText = sparksState.distance;
+            }
+
+            sparksAnimationId = requestAnimationFrame(sparksTick);
+        }
+
+        // --- Tab Switching Logic ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('active', 'bg-yellow-400');
+                btn.classList.add('bg-white');
+            });
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if(activeBtn) {
+                activeBtn.classList.add('active', 'bg-yellow-400');
+                activeBtn.classList.remove('bg-white');
+            }
+
+            // Stop all games
+            if (typeof gameState !== 'undefined' && tabId !== 'games') gameState.isRunning = false;
+            if (typeof obstacleState !== 'undefined' && tabId !== 'games') obstacleState.isRunning = false;
+            if (typeof watermelonState !== 'undefined' && tabId !== 'games') watermelonState.isRunning = false;
+            if (typeof sparksState !== 'undefined' && tabId !== 'games') sparksState.isRunning = false;
+
+            const contentDiv = document.getElementById('main-content');
+            if (tabId === 'home') contentDiv.innerHTML = renderHome();
+            if (tabId === 'series') contentDiv.innerHTML = renderSeries();
+            if (tabId === 'characters') contentDiv.innerHTML = renderCharacters();
+            if (tabId === 'writers') contentDiv.innerHTML = renderWriters();
+            if (tabId === 'games') contentDiv.innerHTML = renderGames();
+            if (tabId === 'watch') {
+                contentDiv.innerHTML = renderWatch();
+                renderWatchVideos(watchVideosData); // Inject videos right after rendering
+            }
+        }
+
+        // Initialize App on load
+        window.onload = () => switchTab('home');
+    </script>
+</body>
+</html>
